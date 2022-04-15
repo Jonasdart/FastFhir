@@ -1,0 +1,9 @@
+import os
+from fastapi import FastAPI
+from starlette.requests import Request
+
+app = FastAPI(
+    title="A FastFHIR Application",
+    version=0.1,
+    root_path=f"/{os.environ['STAGE']}",
+)
