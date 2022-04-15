@@ -2,10 +2,10 @@ import os
 from . import root_path
 from ..configs.defaults import VERSIONS_PATHS
 from ..configs import version_manager
+from . import fastApi_constructor
 
 
 def generate_version(version):
-    print(version)
     new_version = {"name": version["versionName"], "path": version["versionPath"]}
 
     return new_version
@@ -20,20 +20,23 @@ def persist_version(version):
 def verify_if_exists_a_new_version(versions):
     for version in versions:
         if not version_manager.get_version(version):
-            version
+            return version
 
 
 def get_versions_in_path():
     versions_path = os.path.join(root_path, VERSIONS_PATHS)
+    versions = []
     if os.path.isdir(versions_path):
-        return [
-            {
-                "versionName": path,
-                "versionPath": os.path.abspath(os.path.join(versions_path, path)),
-            }
-            for path in os.listdir(versions_path)
-        ]
-
+        for version in os.listdir(versions_path):
+            path = os.path.abspath(os.path.join(versions_path, version))
+            if os.path.isdir(path):
+                versions.append(
+                    {
+                        "versionName": version,
+                        "versionPath": path,
+                    }
+                )
+    if versions: return versions
     raise FileNotFoundError("The versions path does not exists into interfaces path")
 
 
@@ -50,4 +53,4 @@ def create_version():
 
 
 def generate_fastAPI_version(version):
-    pass
+    fastApi_constructor.generate_new_version_structure(version["name"])
